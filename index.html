@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Pazhampori &amp; Beef.co — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2b1b12;
+    --paper:#f6e8c8;
+    --paper-dark:#ecd9af;
+    --line:#b08a4e;
+    --accent:#e08d3c;
+    --muted:#7a5c3e;
+    --error:#b5292b;
+    --chili:#b5292b;
+    --turmeric:#f4c430;
+    --leaf:#2d5530;
+    --wood:#2b1b12;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    min-height:100%;
+    width:100%;
+    font-family:"Courier Prime", "Courier New", monospace;
+    background:var(--paper);
+    color:var(--ink);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(176,138,78,.05) 0px, rgba(176,138,78,.05) 1px, transparent 1px, transparent 3px);
+  }
+  body{
+    min-height:100vh;
+    position:relative;
+  }
+
+  /* ---------- Shared: retro signboard header ---------- */
+  .shopboard{
+    width:100vw;
+    margin-left:calc(-50vw + 50%);
+    margin-right:calc(-50vw + 50%);
+    text-align:center;
+    padding:14px 10px 12px;
+    background:var(--chili);
+    border-bottom:6px solid var(--turmeric);
+    box-shadow:0 4px 0 var(--wood);
+    margin-bottom:24px;
+  }
+  .shopboard .brand{
+    font-family:"Anton", "Impact", sans-serif;
+    font-size:clamp(22px, 6vw, 38px);
+    letter-spacing:.06em;
+    color:var(--turmeric);
+    text-shadow:
+      2px 2px 0 var(--wood),
+      -1px -1px 0 rgba(255,255,255,.15);
+    margin:0;
+    line-height:1.15;
+    display:inline-block;
+    transform:rotate(-0.6deg);
+  }
+  .shopboard .brand .amp{
+    color:var(--paper);
+    display:inline-block;
+    transform:rotate(4deg);
+    padding:0 4px;
+  }
+  .shopboard .tagline{
+    font-family:"Special Elite", "Courier Prime", monospace;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--paper);
+    margin:6px 0 0;
+    opacity:.85;
+  }
+
+  /* ---------- Login screen ---------- */
+  #login-screen{
+    min-height:100vh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:var(--paper);
+    transition:opacity .5s ease;
+    padding:16px;
+  }
+  #login-screen.fade-out{
+    display:none;
+  }
+  .panel{
+    width:min(380px, 92vw);
+    border:3px solid var(--wood);
+    padding:30px 28px;
+    background:var(--paper-dark);
+    box-shadow:6px 6px 0 var(--leaf);
+    position:relative;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border:1px dashed var(--accent);
+    pointer-events:none;
+  }
+  .panel h1{
+    font-family:"Anton", "Impact", sans-serif;
+    font-size:20px;
+    font-weight:400;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin:0 0 4px;
+    color:var(--chili);
+  }
+  .panel p.sub{
+    font-size:12px;
+    color:var(--muted);
+    margin:0 0 26px;
+    letter-spacing:.04em;
+    font-family:"Special Elite", monospace;
+  }
+  .field{
+    margin-bottom:18px;
+  }
+  .field label{
+    display:block;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--leaf);
+    margin-bottom:6px;
+    font-weight:700;
+  }
+  .field label .manglish{
+    color:var(--chili);
+    font-weight:400;
+    text-transform:none;
+    letter-spacing:.02em;
+  }
+  .field input{
+    width:100%;
+    padding:10px 8px;
+    border:none;
+    border-bottom:2px solid var(--line);
+    background:#fffaf0;
+    font-size:14px;
+    color:var(--ink);
+    font-family:"Courier Prime", monospace;
+    outline:none;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .field input:focus{
+    border-bottom-color:var(--chili);
+    background:#fff;
+  }
+  .verify-btn{
+    width:100%;
+    margin-top:18px;
+    padding:13px 0;
+    background:var(--turmeric);
+    color:var(--wood);
+    border:2px solid var(--wood);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-family:"Anton", "Impact", sans-serif;
+    cursor:pointer;
+    box-shadow:3px 3px 0 var(--wood);
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .verify-btn:hover{
+    transform:translate(1px, 1px);
+    box-shadow:2px 2px 0 var(--wood);
+  }
+  .verify-btn:active{
+    transform:translate(3px, 3px);
+    box-shadow:0 0 0 var(--wood);
+  }
+  .panel .footnote{
+    margin-top:22px;
+    font-size:10px;
+    color:var(--muted);
+    letter-spacing:.04em;
+    line-height:1.7;
+    font-family:"Special Elite", monospace;
+  }
+
+  /* ---------- CAPTCHA screen ---------- */
+  #captcha-screen{
+    min-height:100vh;
+    width:100%;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:var(--paper);
+    padding:16px;
+  }
+  #captcha-screen.active{
+    display:flex;
+  }
+
+  .captcha-card{
+    width:min(720px, 96vw);
+    background:var(--wood);
+    border:3px solid var(--turmeric);
+    box-shadow:6px 6px 0 var(--chili);
+    overflow:hidden;
+  }
+
+  #stage{
+    position:relative;
+    width:100%;
+    aspect-ratio: 8 / 5;
+    overflow:hidden;
+    cursor:crosshair;
+    touch-action:none;
+  }
+  #bg-img{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    user-select:none;
+    -webkit-user-drag:none;
+    pointer-events:none;
+  }
+  #ajp{
+    position:absolute;
+    pointer-events:none;
+    will-change:transform, opacity, filter;
+    image-rendering:pixelated;
+  }
+
+  /* CAPTCHA HUD */
+  .captcha-hud{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    padding:12px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    pointer-events:none;
+    color:var(--turmeric);
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    gap:10px;
+    font-family:"Anton", "Impact", sans-serif;
+  }
+  .captcha-hud .tag{
+    border:2px solid var(--turmeric);
+    padding:5px 10px;
+    background:rgba(43,27,18,.65);
+    flex-shrink:0;
+  }
+  .captcha-hud .right{
+    text-align:right;
+    color:var(--paper);
+    max-width:55%;
+    line-height:1.6;
+    text-transform:none;
+    letter-spacing:.02em;
+    font-size:10px;
+    font-family:"Special Elite", monospace;
+  }
+
+  .captcha-footer{
+    padding:14px 14px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    background:var(--wood);
+    border-top:2px dashed var(--turmeric);
+    flex-wrap:wrap;
+  }
+  .captcha-footer .prompt{
+    color:var(--paper);
+    font-size:12px;
+    letter-spacing:.04em;
+    line-height:1.6;
+    flex:1 1 220px;
+    font-family:"Special Elite", monospace;
+  }
+  .captcha-footer .prompt .state{
+    display:block;
+    margin-top:4px;
+    color:var(--turmeric);
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-family:"Anton", "Impact", sans-serif;
+  }
+  .submit-btn{
+    pointer-events:all;
+    background:var(--turmeric);
+    color:var(--wood);
+    border:2px solid var(--wood);
+    padding:12px 22px;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-family:"Anton", "Impact", sans-serif;
+    cursor:pointer;
+    white-space:nowrap;
+    box-shadow:3px 3px 0 var(--chili);
+    transition:transform .1s ease, box-shadow .1s ease, background .15s ease, color .15s ease;
+  }
+  .submit-btn:hover{
+    transform:translate(1px, 1px);
+    box-shadow:2px 2px 0 var(--chili);
+  }
+  .submit-btn:active{
+    transform:translate(3px, 3px);
+    box-shadow:0 0 0 var(--chili);
+  }
+  .submit-btn:disabled{
+    background:transparent;
+    color:rgba(246,232,200,.35);
+    border:2px solid rgba(246,232,200,.25);
+    box-shadow:none;
+    cursor:not-allowed;
+  }
+  .submit-btn:disabled:hover{ transform:none; }
+  .submit-btn.ready{
+    background:var(--leaf);
+    color:var(--paper);
+    border-color:var(--turmeric);
+  }
+
+  /* ---------- Result screen ---------- */
+  #result-screen{
+    min-height:100vh;
+    width:100%;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:var(--paper);
+    padding:16px;
+  }
+  #result-screen.active{
+    display:flex;
+  }
+  #result-screen .panel h1{
+    margin-bottom:14px;
+  }
+  #result-screen .panel p{
+    font-size:12px;
+    line-height:1.7;
+    color:var(--muted);
+    margin:0 0 8px;
+    font-family:"Special Elite", monospace;
+  }
+  #result-screen .panel .status{
+    font-family:"Anton", "Impact", sans-serif;
+    font-size:18px;
+    color:var(--leaf);
+    letter-spacing:.04em;
+    margin-bottom:18px;
+  }
+  .retry-btn{
+    margin-top:10px;
+    width:100%;
+    padding:12px 0;
+    background:transparent;
+    color:var(--ink);
+    border:2px solid var(--wood);
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-family:"Anton", "Impact", sans-serif;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .retry-btn:hover{
+    background:var(--wood);
+    color:var(--paper);
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= LOGIN SCREEN ================= -->
+  <div id="login-screen">
+    <div class="shopboard">
+      <h1 class="brand">PAZHAMPORI <span class="amp">&amp;</span> BEEF.CO</h1>
+      <p class="tagline">Nadan Thattukada — Est. since aa pazhayakaalam</p>
+    </div>
+    <div class="panel">
+      <h1>Member Login</h1>
+      <p class="sub">Varavu ariyikkuka — please sign in</p>
+
+      <div class="field">
+        <label for="username">Name <span class="manglish"></span></label>
+        <input id="username" type="text" autocomplete="username" placeholder="ninte per type cheyyu">
+      </div>
+
+      <div class="field">
+        <label for="password">Password <span class="manglish"></span></label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="secret vaakku">
+      </div>
+
+      <button class="verify-btn" id="login-btn">Verify cheyyu &amp; continue</button>
+
+      <p class="footnote">Login kazhinjaal oru chinna check undu. Screen-il pointer/finger ittu nokku, AJP-ne kandupidikkanam.</p>
+    </div>
+  </div>
+
+  <!-- ================= CAPTCHA SCREEN ================= -->
+  <div id="captcha-screen">
+    <div class="shopboard">
+      <h1 class="brand">PAZHAMPORI <span class="amp">&amp;</span> BEEF.CO</h1>
+      <p class="tagline">Ningalaanu manushyan ennu thelivakkuka</p>
+    </div>
+    <div class="captcha-card">
+      <div id="stage">
+        <img id="bg-img" src="bg.png" alt="" draggable="false">
+        <img id="ajp" src="ajp.png" alt="" draggable="false">
+
+        <div class="captcha-hud">
+          <div class="tag">AJP-ne kandupidikku</div>
+          <div class="right">Pointer/finger image-il move cheythu AJP-yude near ninnu hold cheyyu.</div>
+        </div>
+      </div>
+
+      <div class="captcha-footer">
+        <div class="prompt">
+          Find AJP — naadan crowd-il oraal olichirikkunnu.
+          <span class="state" id="captcha-state">Innum kandilla</span>
+        </div>
+        <button class="submit-btn" id="captcha-submit" disabled>Confirm cheyyu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= RESULT SCREEN ================= -->
+  <div id="result-screen">
+    <div class="shopboard">
+      <h1 class="brand">PAZHAMPORI <span class="amp">&amp;</span> BEEF.CO</h1>
+      <p class="tagline">Verification result</p>
+    </div>
+    <div class="panel">
+      <h1>Verification</h1>
+      <p class="status" id="result-status">Session check nadakkunnu...</p>
+      <p id="result-detail">Ninte movement pattern record cheythittund, ee check-inte bhagamayi.</p>
+      <button class="retry-btn" id="retry-btn">Login screen-ilekku thirike</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+
+  // ---------------------------------------------------------------
+  // Stage transitions
+  // ---------------------------------------------------------------
+  const loginScreen   = document.getElementById('login-screen');
+  const captchaScreen = document.getElementById('captcha-screen');
+  const resultScreen  = document.getElementById('result-screen');
+  const loginBtn      = document.getElementById('login-btn');
+  const captchaSubmit = document.getElementById('captcha-submit');
+  const retryBtn      = document.getElementById('retry-btn');
+  const resultStatus  = document.getElementById('result-status');
+  const resultDetail  = document.getElementById('result-detail');
+  const captchaState  = document.getElementById('captcha-state');
+
+  loginBtn.addEventListener('click', () => {
+    loginScreen.classList.add('fade-out');
+    captchaScreen.classList.add('active');
+    initStage();
+    requestAnimationFrame(layout);
+  });
+
+  retryBtn.addEventListener('click', () => {
+    resultScreen.classList.remove('active');
+    captchaScreen.classList.remove('active');
+    loginScreen.classList.remove('fade-out');
+    resetTracking();
+  });
+
+  // ---------------------------------------------------------------
+  // Stage / image-space setup
+  // ---------------------------------------------------------------
+  const stage = document.getElementById('stage');
+  const bgImg = document.getElementById('bg-img');
+  const ajp   = document.getElementById('ajp');
+
+  // Native dimensions of bg.jpg
+  const IMG_W = 1600;
+  const IMG_H = 1000;
+
+  // AJP "true" location, in image-space coordinates (0..IMG_W, 0..IMG_H)
+  // Placed among the mid-crowd rows so it visually sits within the figures.
+  // This is mutable: AJP relocates to a new resting point whenever the
+  // pointer drifts away from it, so it can never be pinned down for long
+  // until it is actually caught.
+  let AJP_HOME = { x: 845, y: 470 };
+
+  // Pool of plausible resting spots scattered across the crowd rows.
+  // AJP hops between these only while the pointer is far away, so the
+  // relocation itself is never directly observed.
+  const AJP_SPOTS = [
+    { x: 845, y: 470 },
+    { x: 360, y: 360 },
+    { x: 1180, y: 340 },
+    { x: 620, y: 560 },
+    { x: 1340, y: 600 },
+    { x: 220, y: 460 },
+    { x: 980, y: 620 },
+    { x: 1460, y: 430 },
+    { x: 500, y: 700 },
+    { x: 1080, y: 480 },
+    { x: 760, y: 340 },
+    { x: 1280, y: 720 }
+  ];
+
+  // AJP sprite native size - matches the new sprite's ~25:68 aspect ratio,
+  // sized to sit comfortably among the foreground crowd figures.
+  const AJP_W = 250;
+  const AJP_H = 250;
+
+  let initialized = false;
+  let rafId = null;
+
+  // pointer position in image-space (null until first move)
+  let pointerImg = null;
+
+  // drift state - AJP's current offset from its home position
+  let drift = { x: 0, y: 0 };
+  let driftTarget = { x: 0, y: 0 };
+
+  // jitter / noise phase
+  let noisePhase = Math.random() * Math.PI * 2;
+
+  let lastTime = performance.now();
+
+  function initStage(){
+    if (!initialized){
+      initialized = true;
+      window.addEventListener('resize', layout);
+      stage.addEventListener('pointermove', onPointerMove, { passive: true });
+      stage.addEventListener('pointerleave', onPointerLeave, { passive: true });
+      stage.addEventListener('pointerdown', onPointerMove, { passive: true });
+    }
+    layout();
+    if (!rafId){
+      lastTime = performance.now();
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  // cover-fit math: compute the on-screen rect occupied by the background image
+  function getCoverRect(){
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+    const imageRatio = IMG_W / IMG_H;
+    const stageRatio = sw / sh;
+
+    let drawW, drawH;
+    if (stageRatio > imageRatio) {
+      // stage wider than image -> width drives
+      drawW = sw;
+      drawH = sw / imageRatio;
+    } else {
+      drawH = sh;
+      drawW = sh * imageRatio;
+    }
+    const offsetX = (sw - drawW) / 2;
+    const offsetY = (sh - drawH) / 2;
+    return { drawW, drawH, offsetX, offsetY, scale: drawW / IMG_W };
+  }
+
+  function layout(){
+    const rect = getCoverRect();
+    bgImg.style.width  = rect.drawW + 'px';
+    bgImg.style.height = rect.drawH + 'px';
+  }
+
+  // convert screen-space pointer coords -> image-space coords
+  function screenToImage(sx, sy){
+    const rect = getCoverRect();
+    const stageBox = stage.getBoundingClientRect();
+    const localX = sx - stageBox.left - rect.offsetX;
+    const localY = sy - stageBox.top  - rect.offsetY;
+    return {
+      x: localX / rect.scale,
+      y: localY / rect.scale
+    };
+  }
+
+  // convert image-space coords -> screen-space pixel coords (for placing AJP)
+  function imageToScreen(ix, iy){
+    const rect = getCoverRect();
+    return {
+      x: rect.offsetX + ix * rect.scale,
+      y: rect.offsetY + iy * rect.scale,
+      scale: rect.scale
+    };
+  }
+
+  // ---------------------------------------------------------------
+  // Pointer tracking
+  // ---------------------------------------------------------------
+  function onPointerMove(e){
+    pointerImg = screenToImage(e.clientX, e.clientY);
+    recordSample(pointerImg, e.timeStamp);
+  }
+
+  function onPointerLeave(){
+    pointerImg = null;
+  }
+
+  // ---------------------------------------------------------------
+  // Perception zone behaviour
+  // ---------------------------------------------------------------
+  // Distances are measured in image-space pixels.
+  const PROXIMITY_RADIUS = 320;   // beyond this, AJP is fully "calm"
+  const REACT_RADIUS     = 170;   // inside this, strongest reaction
+  const RELOCATE_RADIUS  = 100;   // closer than this, AJP starts slipping toward a new spot
+
+  let relocateCooldown = 0;
+  let lastSpotIndex = 0;
+
+  // ---------------------------------------------------------------
+  // Win condition: hold the pointer within CATCH_RADIUS of AJP for
+  // CATCH_TIME_MS without it relocating. This is the ONLY way to enable
+  // the Confirm button. CATCH_RADIUS is now smaller than RELOCATE_RADIUS,
+  // so AJP reliably slips to a new spot before the pointer gets close
+  // enough to start the catch timer - the user has to corner it across
+  // several attempts rather than landing it on a first sweep.
+  // ---------------------------------------------------------------
+  let targetCaught = false;
+  let catchTimer = 0;
+
+  const CATCH_RADIUS = 60;
+  const CATCH_TIME_MS = 600;
+
+  function pickNextSpot(){
+    // Build a list of candidate spots, excluding the current one, then weight
+    // each candidate by distance from the pointer (so AJP tends to move away
+    // from where the user is looking) but pick among the top candidates at
+    // random - this avoids always favoring the same axis or direction.
+    const candidates = [];
+    for (let i = 0; i < AJP_SPOTS.length; i++){
+      if (i === lastSpotIndex) continue;
+      const spot = AJP_SPOTS[i];
+      let dPointer = 0;
+      if (pointerImg) dPointer = Math.hypot(spot.x - pointerImg.x, spot.y - pointerImg.y);
+      candidates.push({ index: i, dPointer });
+    }
+
+    // sort by distance from pointer, descending
+    candidates.sort((a, b) => b.dPointer - a.dPointer);
+
+    // take the top half (farthest from pointer) and choose randomly among them
+    const poolSize = Math.max(1, Math.ceil(candidates.length / 2));
+    const pool = candidates.slice(0, poolSize);
+    const choice = pool[Math.floor(Math.random() * pool.length)];
+
+    lastSpotIndex = choice.index;
+    return AJP_SPOTS[choice.index];
+  }
+
+  function tick(now){
+    const dt = Math.min(48, now - lastTime);
+    lastTime = now;
+
+    const home = AJP_HOME;
+    let dist = Infinity;
+
+    if (pointerImg){
+      const dx = pointerImg.x - (home.x + drift.x);
+      const dy = pointerImg.y - (home.y + drift.y);
+      dist = Math.sqrt(dx*dx + dy*dy);
+    }
+
+    // --- win check: pointer held close enough for long enough ---
+    if (!targetCaught) {
+      if (pointerImg && dist < CATCH_RADIUS) {
+        catchTimer += dt;
+        if (catchTimer >= CATCH_TIME_MS) {
+          targetCaught = true;
+          onAjpCaught();
+        }
+      } else {
+        catchTimer = 0;
+      }
+    }
+
+    // proximity factor: 0 = far away (calm), 1 = very close (max reaction)
+    let proximity = 0;
+    if (dist < PROXIMITY_RADIUS){
+      proximity = 1 - Math.max(0, (dist - REACT_RADIUS)) / (PROXIMITY_RADIUS - REACT_RADIUS);
+      proximity = Math.min(1, Math.max(0, proximity));
+    }
+
+    relocateCooldown = Math.max(0, relocateCooldown - dt);
+
+    // --- drift: AJP slowly shifts away from the pointer when it gets close ---
+    if (!targetCaught && pointerImg && dist < PROXIMITY_RADIUS){
+      const dx = (home.x + drift.x) - pointerImg.x;
+      const dy = (home.y + drift.y) - pointerImg.y;
+
+      // base retreat direction, away from the pointer, with a small random
+      // angular wobble so the motion doesn't read as a straight horizontal
+      // or vertical line
+      const baseAngle = Math.atan2(dy, dx);
+      const wobble = (Math.random() - 0.5) * 0.9; // up to ~±26 degrees
+      const angle = baseAngle + wobble;
+
+      const pushStrength = proximity * 9; // smaller, subtler drift
+      driftTarget.x += Math.cos(angle) * pushStrength * (dt/1000);
+      driftTarget.y += Math.sin(angle) * pushStrength * (dt/1000);
+
+      // clamp drift to a small radius so AJP never visibly relocates this way
+      const maxDrift = 14;
+      const dl = Math.sqrt(driftTarget.x*driftTarget.x + driftTarget.y*driftTarget.y);
+      if (dl > maxDrift){
+        driftTarget.x = driftTarget.x / dl * maxDrift;
+        driftTarget.y = driftTarget.y / dl * maxDrift;
+      }
+    } else if (!targetCaught) {
+      // gently relax back toward home when pointer is far away
+      driftTarget.x *= 0.985;
+      driftTarget.y *= 0.985;
+    }
+
+    // smooth drift toward target (very slow easing - reads as drift, not a dodge)
+    drift.x += (driftTarget.x - drift.x) * 0.022;
+    drift.y += (driftTarget.y - drift.y) * 0.022;
+
+    // --- jitter / perception noise, scales with proximity ---
+    noisePhase += dt * 0.003 * (0.4 + proximity * 1.2);
+    const jitterAmp = targetCaught ? 0 : proximity * 1.6;
+    const jx = Math.sin(noisePhase * 1.7) * jitterAmp + Math.cos(noisePhase * 0.9) * jitterAmp * 0.4;
+    const jy = Math.cos(noisePhase * 1.3) * jitterAmp + Math.sin(noisePhase * 2.1) * jitterAmp * 0.4;
+
+    // also a faint idle jitter even when calm, so AJP never feels perfectly static
+    const idleAmp = targetCaught ? 0 : 0.4;
+    const ix = Math.sin(now * 0.0011) * idleAmp;
+    const iy = Math.cos(now * 0.0009) * idleAmp;
+
+    const finalImgX = home.x + drift.x + jx + ix;
+    const finalImgY = home.y + drift.y + jy + iy;
+
+    // --- visual instability: opacity / blur / blend based on proximity ---
+    // farther = more visible (baseline opacity), closer = fades and blends
+    const baseOpacity = 0.6;
+    const minOpacity  = 0.05;
+    let opacity = baseOpacity - proximity * (baseOpacity - minOpacity);
+
+    // extra random flicker only near the reaction radius, kept subtle
+    if (proximity > 0.15 && !targetCaught){
+      opacity += (Math.random() - 0.5) * 0.03 * proximity;
+      opacity = Math.max(0.02, Math.min(0.5, opacity));
+    }
+
+    // once caught, AJP settles into full visibility and stays put
+    if (targetCaught){
+      opacity = 1;
+    }
+
+    // --- relocation: once the pointer presses in close enough and AJP has
+    // faded near to invisible, quietly retarget the home position to a
+    // distant spot. The retarget itself is hidden inside the low-opacity
+    // moment, so it never reads as a teleport or disappearance.
+    // Skipped entirely while the catch timer is counting, so a near-win
+    // is never disrupted by a relocation. ---
+    if (
+      !targetCaught &&
+      catchTimer <= 0 &&
+      pointerImg &&
+      dist < RELOCATE_RADIUS &&
+      opacity < 0.12 &&
+      relocateCooldown <= 0
+    ){
+      AJP_HOME = pickNextSpot();
+      // reset drift relative to the new home so the figure doesn't
+      // visibly snap across the screen
+      drift = { x: 0, y: 0 };
+      driftTarget = { x: 0, y: 0 };
+      relocateCooldown = 900; // ms before AJP can relocate again
+    }
+
+    const blurPx = targetCaught ? 0 : proximity * 1.6;
+    const saturation = targetCaught ? 1 : (1 - proximity * 0.5);
+    const blendMode = (!targetCaught && proximity > 0.55) ? 'soft-light' : 'normal';
+
+    // --- place AJP in screen space ---
+    const screenPos = imageToScreen(finalImgX, finalImgY);
+    const drawScale = screenPos.scale;
+
+    ajp.style.left = (screenPos.x - (AJP_W * drawScale) / 2) + 'px';
+    ajp.style.top  = (screenPos.y - (AJP_H * drawScale)) + 'px';
+    ajp.style.width  = (AJP_W * drawScale) + 'px';
+    ajp.style.height = (AJP_H * drawScale) + 'px';
+    ajp.style.opacity = opacity.toFixed(3);
+    ajp.style.filter = `blur(${blurPx.toFixed(2)}px) saturate(${saturation.toFixed(2)})`;
+    ajp.style.mixBlendMode = blendMode;
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // Called once, the moment AJP is caught: unlock the Confirm button.
+  function onAjpCaught(){
+    captchaSubmit.disabled = false;
+    captchaSubmit.classList.add('ready');
+    captchaState.textContent = 'AJPnne kitti! Confirm cheyyam';
+  }
+
+  // ---------------------------------------------------------------
+  // Behavioural tracking (kept for telemetry; not used to gate the win)
+  // ---------------------------------------------------------------
+  let samples = [];
+  const MAX_SAMPLES = 4000;
+
+  function recordSample(p, t){
+    samples.push({ x: p.x, y: p.y, t: t });
+    if (samples.length > MAX_SAMPLES) samples.shift();
+  }
+
+  function resetTracking(){
+    samples = [];
+    pointerImg = null;
+    drift = { x: 0, y: 0 };
+    driftTarget = { x: 0, y: 0 };
+
+    targetCaught = false;
+    catchTimer = 0;
+    relocateCooldown = 0;
+
+    captchaSubmit.disabled = true;
+    captchaSubmit.classList.remove('ready');
+    captchaState.textContent = 'Innum kandilla';
+  }
+
+  // ---------------------------------------------------------------
+  // Submit - only reachable once AJP has been caught, since the
+  // Confirm button stays disabled until then.
+  // ---------------------------------------------------------------
+  captchaSubmit.addEventListener('click', () => {
+    if (!targetCaught) return; // safety guard, button is disabled anyway
+
+    if (rafId){ cancelAnimationFrame(rafId); rafId = null; }
+
+    captchaScreen.classList.remove('active');
+    resultScreen.classList.add('active');
+
+    resultStatus.textContent = 'Yay, you are a human!';
+    resultDetail.textContent = 'Login confirm aayi. Pazhampori & Beef.co-yilekku swagatham!';
+  });
+
+})();
+</script>
+</body>
+</html>
