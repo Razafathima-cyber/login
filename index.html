@@ -452,8 +452,8 @@
     <div class="panel">
       <h1>Verification</h1>
       <p class="status" id="result-status">Session check nadakkunnu...</p>
-      <p id="result-detail">Ninte movement pattern record cheythittund, ee checknte bhagamayi.</p>
-      <button class="retry-btn" id="retry-btn">Try again</button>
+      <p id="result-detail">Ninte movement pattern record cheythittund, ee check-inte bhagamayi.</p>
+      <button class="retry-btn" id="retry-btn">Login screen-ilekku thirike</button>
     </div>
   </div>
 
@@ -523,14 +523,10 @@
     { x: 1280, y: 720 }
   ];
 
-  // AJP sprite native size - sized to sit comfortably among the
-  // foreground crowd figures without dominating the scene.
-  const AJP_W = 160;
-  const AJP_H = 160;
-
-  // Minimum on-screen size in CSS px so AJP stays visible on narrow
-  // (phone) viewports where drawScale is small.
-  const MIN_SCREEN_SIZE = 48;
+  // AJP sprite native size - matches the new sprite's ~25:68 aspect ratio,
+  // sized to sit comfortably among the foreground crowd figures.
+  const AJP_W = 250;
+  const AJP_H = 250;
 
   let initialized = false;
   let rafId = null;
@@ -637,12 +633,15 @@
   // ---------------------------------------------------------------
   // Win condition: hold the pointer within CATCH_RADIUS of AJP for
   // CATCH_TIME_MS without it relocating. This is the ONLY way to enable
-  // the Confirm button.
+  // the Confirm button. CATCH_RADIUS is now smaller than RELOCATE_RADIUS,
+  // so AJP reliably slips to a new spot before the pointer gets close
+  // enough to start the catch timer - the user has to corner it across
+  // several attempts rather than landing it on a first sweep.
   // ---------------------------------------------------------------
   let targetCaught = false;
   let catchTimer = 0;
 
-  const CATCH_RADIUS = 90;
+  const CATCH_RADIUS = 60;
   const CATCH_TIME_MS = 600;
 
   function pickNextSpot(){
@@ -755,8 +754,8 @@
 
     // --- visual instability: opacity / blur / blend based on proximity ---
     // farther = more visible (baseline opacity), closer = fades and blends
-    const baseOpacity = 0.85;
-    const minOpacity  = 0.15;
+    const baseOpacity = 0.6;
+    const minOpacity  = 0.05;
     let opacity = baseOpacity - proximity * (baseOpacity - minOpacity);
 
     // extra random flicker only near the reaction radius, kept subtle
@@ -800,21 +799,10 @@
     const screenPos = imageToScreen(finalImgX, finalImgY);
     const drawScale = screenPos.scale;
 
-    let renderW = AJP_W * drawScale;
-    let renderH = AJP_H * drawScale;
-
-    // enforce a minimum on-screen size so AJP doesn't shrink to near
-    // invisibility on narrow/phone viewports, while preserving aspect ratio
-    if (renderW < MIN_SCREEN_SIZE || renderH < MIN_SCREEN_SIZE) {
-      const sizeRatio = Math.max(MIN_SCREEN_SIZE / renderW, MIN_SCREEN_SIZE / renderH);
-      renderW *= sizeRatio;
-      renderH *= sizeRatio;
-    }
-
-    ajp.style.left = (screenPos.x - renderW / 2) + 'px';
-    ajp.style.top  = (screenPos.y - renderH) + 'px';
-    ajp.style.width  = renderW + 'px';
-    ajp.style.height = renderH + 'px';
+    ajp.style.left = (screenPos.x - (AJP_W * drawScale) / 2) + 'px';
+    ajp.style.top  = (screenPos.y - (AJP_H * drawScale)) + 'px';
+    ajp.style.width  = (AJP_W * drawScale) + 'px';
+    ajp.style.height = (AJP_H * drawScale) + 'px';
     ajp.style.opacity = opacity.toFixed(3);
     ajp.style.filter = `blur(${blurPx.toFixed(2)}px) saturate(${saturation.toFixed(2)})`;
     ajp.style.mixBlendMode = blendMode;
