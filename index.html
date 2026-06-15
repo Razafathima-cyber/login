@@ -412,7 +412,7 @@
 
       <button class="verify-btn" id="login-btn">Verify cheyyu &amp; continue</button>
 
-      <p class="footnote">Login kazhinjaal oru chinna check undu. Screen-il pointer/finger ittu nokku, AJP-ne kandupidikkanam.</p>
+      <p class="footnote">Login kazhinjaal oru chinna check undu. Beef fry plate-ukalude idayil olichirikkunna pazhampori kandupidikkanam.</p>
     </div>
   </div>
 
@@ -425,17 +425,17 @@
     <div class="captcha-card">
       <div id="stage">
         <img id="bg-img" src="bg.png" alt="" draggable="false">
-        <img id="ajp" src="ajp.png" alt="" draggable="false">
+        <img id="ajp" src="pazhampori.png" alt="" draggable="false">
 
         <div class="captcha-hud">
-          <div class="tag">AJP-ne kandupidikku</div>
-          <div class="right">Pointer/finger image-il move cheythu AJP-yude near ninnu hold cheyyu.</div>
+          <div class="tag">Pazhampori kandupidikku</div>
+          <div class="right">Beef fry plate-ukalkidayil oru pazhampori olichirikkunnu. Pointer/finger move cheythu athinte near ninnu hold cheyyu.</div>
         </div>
       </div>
 
       <div class="captcha-footer">
         <div class="prompt">
-          Find AJP — naadan crowd-il oraal olichirikkunnu.
+          Find the Pazhampori — beef fry plate-ukalkidayil oru pazhampori olichirikkunnu.
           <span class="state" id="captcha-state">Innum kandilla</span>
         </div>
         <button class="submit-btn" id="captcha-submit" disabled>Confirm cheyyu</button>
@@ -494,20 +494,20 @@
   const bgImg = document.getElementById('bg-img');
   const ajp   = document.getElementById('ajp');
 
-  // Native dimensions of bg.jpg
+  // Native dimensions of bg.png (a spread of beef fry plates on banana leaves)
   const IMG_W = 1600;
   const IMG_H = 1000;
 
-  // AJP "true" location, in image-space coordinates (0..IMG_W, 0..IMG_H)
-  // Placed among the mid-crowd rows so it visually sits within the figures.
-  // This is mutable: AJP relocates to a new resting point whenever the
-  // pointer drifts away from it, so it can never be pinned down for long
+  // Pazhampori "true" location, in image-space coordinates (0..IMG_W, 0..IMG_H)
+  // Placed among the plates so it visually sits within the spread.
+  // This is mutable: the pazhampori relocates to a new resting point whenever
+  // the pointer drifts away from it, so it can never be pinned down for long
   // until it is actually caught.
   let AJP_HOME = { x: 845, y: 470 };
 
-  // Pool of plausible resting spots scattered across the crowd rows.
-  // AJP hops between these only while the pointer is far away, so the
-  // relocation itself is never directly observed.
+  // Pool of plausible resting spots scattered across the plate spread.
+  // The pazhampori hops between these only while the pointer is far away,
+  // so the relocation itself is never directly observed.
   const AJP_SPOTS = [
     { x: 845, y: 470 },
     { x: 360, y: 360 },
@@ -523,8 +523,8 @@
     { x: 1280, y: 720 }
   ];
 
-  // AJP sprite native size - matches the new sprite's ~25:68 aspect ratio,
-  // sized to sit comfortably among the foreground crowd figures.
+  // Pazhampori sprite native size - sized to sit comfortably among the
+  // beef fry plates without dominating the scene.
   const AJP_W = 250;
   const AJP_H = 250;
 
@@ -534,7 +534,7 @@
   // pointer position in image-space (null until first move)
   let pointerImg = null;
 
-  // drift state - AJP's current offset from its home position
+  // drift state - pazhampori's current offset from its home position
   let drift = { x: 0, y: 0 };
   let driftTarget = { x: 0, y: 0 };
 
@@ -597,7 +597,7 @@
     };
   }
 
-  // convert image-space coords -> screen-space pixel coords (for placing AJP)
+  // convert image-space coords -> screen-space pixel coords (for placing the pazhampori)
   function imageToScreen(ix, iy){
     const rect = getCoverRect();
     return {
@@ -623,19 +623,19 @@
   // Perception zone behaviour
   // ---------------------------------------------------------------
   // Distances are measured in image-space pixels.
-  const PROXIMITY_RADIUS = 320;   // beyond this, AJP is fully "calm"
+  const PROXIMITY_RADIUS = 320;   // beyond this, the pazhampori is fully "calm"
   const REACT_RADIUS     = 170;   // inside this, strongest reaction
-  const RELOCATE_RADIUS  = 100;   // closer than this, AJP starts slipping toward a new spot
+  const RELOCATE_RADIUS  = 100;   // closer than this, the pazhampori starts slipping toward a new spot
 
   let relocateCooldown = 0;
   let lastSpotIndex = 0;
 
   // ---------------------------------------------------------------
-  // Win condition: hold the pointer within CATCH_RADIUS of AJP for
-  // CATCH_TIME_MS without it relocating. This is the ONLY way to enable
-  // the Confirm button. CATCH_RADIUS is now smaller than RELOCATE_RADIUS,
-  // so AJP reliably slips to a new spot before the pointer gets close
-  // enough to start the catch timer - the user has to corner it across
+  // Win condition: hold the pointer within CATCH_RADIUS of the pazhampori
+  // for CATCH_TIME_MS without it relocating. This is the ONLY way to enable
+  // the Confirm button. CATCH_RADIUS is smaller than RELOCATE_RADIUS,
+  // so the pazhampori reliably slips to a new spot before the pointer gets
+  // close enough to start the catch timer - the user has to corner it across
   // several attempts rather than landing it on a first sweep.
   // ---------------------------------------------------------------
   let targetCaught = false;
@@ -646,9 +646,10 @@
 
   function pickNextSpot(){
     // Build a list of candidate spots, excluding the current one, then weight
-    // each candidate by distance from the pointer (so AJP tends to move away
-    // from where the user is looking) but pick among the top candidates at
-    // random - this avoids always favoring the same axis or direction.
+    // each candidate by distance from the pointer (so the pazhampori tends to
+    // move away from where the user is looking) but pick among the top
+    // candidates at random - this avoids always favoring the same axis or
+    // direction.
     const candidates = [];
     for (let i = 0; i < AJP_SPOTS.length; i++){
       if (i === lastSpotIndex) continue;
@@ -705,7 +706,7 @@
 
     relocateCooldown = Math.max(0, relocateCooldown - dt);
 
-    // --- drift: AJP slowly shifts away from the pointer when it gets close ---
+    // --- drift: the pazhampori slowly shifts away from the pointer when it gets close ---
     if (!targetCaught && pointerImg && dist < PROXIMITY_RADIUS){
       const dx = (home.x + drift.x) - pointerImg.x;
       const dy = (home.y + drift.y) - pointerImg.y;
@@ -721,7 +722,7 @@
       driftTarget.x += Math.cos(angle) * pushStrength * (dt/1000);
       driftTarget.y += Math.sin(angle) * pushStrength * (dt/1000);
 
-      // clamp drift to a small radius so AJP never visibly relocates this way
+      // clamp drift to a small radius so the pazhampori never visibly relocates this way
       const maxDrift = 14;
       const dl = Math.sqrt(driftTarget.x*driftTarget.x + driftTarget.y*driftTarget.y);
       if (dl > maxDrift){
@@ -744,7 +745,7 @@
     const jx = Math.sin(noisePhase * 1.7) * jitterAmp + Math.cos(noisePhase * 0.9) * jitterAmp * 0.4;
     const jy = Math.cos(noisePhase * 1.3) * jitterAmp + Math.sin(noisePhase * 2.1) * jitterAmp * 0.4;
 
-    // also a faint idle jitter even when calm, so AJP never feels perfectly static
+    // also a faint idle jitter even when calm, so the pazhampori never feels perfectly static
     const idleAmp = targetCaught ? 0 : 0.4;
     const ix = Math.sin(now * 0.0011) * idleAmp;
     const iy = Math.cos(now * 0.0009) * idleAmp;
@@ -764,15 +765,15 @@
       opacity = Math.max(0.02, Math.min(0.5, opacity));
     }
 
-    // once caught, AJP settles into full visibility and stays put
+    // once caught, the pazhampori settles into full visibility and stays put
     if (targetCaught){
       opacity = 1;
     }
 
-    // --- relocation: once the pointer presses in close enough and AJP has
-    // faded near to invisible, quietly retarget the home position to a
-    // distant spot. The retarget itself is hidden inside the low-opacity
-    // moment, so it never reads as a teleport or disappearance.
+    // --- relocation: once the pointer presses in close enough and the
+    // pazhampori has faded near to invisible, quietly retarget the home
+    // position to a distant spot. The retarget itself is hidden inside the
+    // low-opacity moment, so it never reads as a teleport or disappearance.
     // Skipped entirely while the catch timer is counting, so a near-win
     // is never disrupted by a relocation. ---
     if (
@@ -788,14 +789,14 @@
       // visibly snap across the screen
       drift = { x: 0, y: 0 };
       driftTarget = { x: 0, y: 0 };
-      relocateCooldown = 900; // ms before AJP can relocate again
+      relocateCooldown = 900; // ms before the pazhampori can relocate again
     }
 
     const blurPx = targetCaught ? 0 : proximity * 1.6;
     const saturation = targetCaught ? 1 : (1 - proximity * 0.5);
     const blendMode = (!targetCaught && proximity > 0.55) ? 'soft-light' : 'normal';
 
-    // --- place AJP in screen space ---
+    // --- place the pazhampori in screen space ---
     const screenPos = imageToScreen(finalImgX, finalImgY);
     const drawScale = screenPos.scale;
 
@@ -810,11 +811,11 @@
     rafId = requestAnimationFrame(tick);
   }
 
-  // Called once, the moment AJP is caught: unlock the Confirm button.
+  // Called once, the moment the pazhampori is caught: unlock the Confirm button.
   function onAjpCaught(){
     captchaSubmit.disabled = false;
     captchaSubmit.classList.add('ready');
-    captchaState.textContent = 'AJPnne kitti! Confirm cheyyam';
+    captchaState.textContent = 'Pazhampori kitti! Confirm cheyyam';
   }
 
   // ---------------------------------------------------------------
@@ -844,8 +845,8 @@
   }
 
   // ---------------------------------------------------------------
-  // Submit - only reachable once AJP has been caught, since the
-  // Confirm button stays disabled until then.
+  // Submit - only reachable once the pazhampori has been caught, since
+  // the Confirm button stays disabled until then.
   // ---------------------------------------------------------------
   captchaSubmit.addEventListener('click', () => {
     if (!targetCaught) return; // safety guard, button is disabled anyway
